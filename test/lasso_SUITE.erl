@@ -1,9 +1,9 @@
 -module(lasso_SUITE).
 -include_lib("common_test/include/ct.hrl").
--export([check_get/1, check_post/1, check_delete/1]).
+-export([check_get/1, check_post/1, check_delete/1, check_put/1]).
 -export([all/0, init_per_testcase/2, end_per_testcase/2]).
 
-all() -> [check_get, check_post, check_delete].
+all() -> [check_get, check_post, check_delete, check_put].
 
 init_per_testcase(_, Config) ->
   Port = 8080,
@@ -13,7 +13,8 @@ init_per_testcase(_, Config) ->
                                     {'_', [
                                            {"/", hello_handler, []},
                                            {"/echo", post_handler, []},
-                                           {"/entity", delete_handler, []}
+                                           {"/entity", delete_handler, []},
+                                           {"/entity2", put_handler, []}
                                           ]}
                                    ]),
   {ok, _} = cowboy:start_http(ListenerName, 5,
@@ -44,4 +45,10 @@ check_post(Config) ->
 check_delete(Config) ->
   ConnPid = ?config(conn, Config),
   {_, _, Body} = lasso:delete(ConnPid, <<"/entity">>),
+  Body = <<"">>.
+
+check_put(Config) ->
+  ConnPid = ?config(conn, Config),
+  RequestBody = <<"{\"name\": \"Test\"}">>,
+  {_, _, Body} = lasso:put(ConnPid, <<"/entity2">>, [{<<"content-type">>, <<"application/json">>}], RequestBody),
   Body = <<"">>.
