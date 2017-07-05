@@ -1,6 +1,6 @@
 -module(lasso_SUITE).
 -include_lib("common_test/include/ct.hrl").
--export([check_get/1, check_post/1]).
+-export([check_get/1, check_post/1, check_delete/1]).
 -export([all/0, init_per_testcase/2, end_per_testcase/2]).
 
 all() -> [check_get, check_post].
@@ -12,7 +12,8 @@ init_per_testcase(_, Config) ->
   Dispatch = cowboy_router:compile([
                                     {'_', [
                                            {"/", hello_handler, []},
-                                           {"/echo", post_handler, []}
+                                           {"/echo", post_handler, []},
+                                           {"/entity", delete_handler, []}
                                           ]}
                                    ]),
   {ok, _} = cowboy:start_http(ListenerName, 5,
@@ -39,3 +40,8 @@ check_post(Config) ->
   RequestBody = <<"{\"msg\": \"Hello world!\"}">>,
   {_, _, Body} = lasso:post(ConnPid, <<"/echo">>, [{<<"content-type">>, <<"application/json">>}], RequestBody),
   RequestBody = Body.
+
+check_delete(Config) ->
+  ConnPid = ?config(conn, Config),
+  {_, _, Body} = lasso:delte(ConnPid, <<"/entity">>),
+  Body = <<"">>.
