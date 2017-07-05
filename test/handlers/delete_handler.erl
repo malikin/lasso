@@ -1,4 +1,4 @@
--module(post_handler).
+-module(delete_handler).
 
 -export([handle/2]).
 -export([init/3]).

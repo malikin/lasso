@@ -3,7 +3,7 @@
 -export([check_get/1, check_post/1, check_delete/1]).
 -export([all/0, init_per_testcase/2, end_per_testcase/2]).
 
-all() -> [check_get, check_post].
+all() -> [check_get, check_post, check_delete].
 
 init_per_testcase(_, Config) ->
   Port = 8080,
@@ -43,5 +43,5 @@ check_post(Config) ->
 
 check_delete(Config) ->
   ConnPid = ?config(conn, Config),
-  {_, _, Body} = lasso:delte(ConnPid, <<"/entity">>),
+  {_, _, Body} = lasso:delete(ConnPid, <<"/entity">>),
   Body = <<"">>.
